@@ -2,4 +2,5 @@ upload_channels:
   - sfe1ed40
 
 channels:
+  # pr created: https://github.com/AnacondaRecipes/ghostscript-feedstock/pull/2
   - https://staging.continuum.io/prefect/fs/ghostscript-feedstock/pr2/b908cb1

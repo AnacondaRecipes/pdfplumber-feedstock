@@ -1,5 +1,5 @@
 {% set name = "pdfplumber" %}
-{% set version = "0.7.6" %}
+{% set version = "0.11.4" %}
 
 
 package:
@@ -7,40 +7,68 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pdfplumber-{{ version }}.tar.gz
-  sha256: a69bcc2a7eba5a2ca3171629dc33f1e08976175e98c8482d028fc6c3f644ec18
+  url: https://github.com/jsvine/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3a11a2fd7779a31cdabc46fba70014ddbddda1af89899b762a498aeda159a60f
 
 build:
   number: 0
   entry_points:
     - pdfplumber = pdfplumber.cli:main
-  script: {{ PYTHON }} -m pip install . -vv
-  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  # Skip version lower then python 3.9, because pdfminer.six is avaliable only from python version 3.9
+  # Skip version higher then python 3.11, because pypdfium2 is avaliable only from python version 3.9 to 3.11
+  skip: True  # [py<39 or py>311]
 
 requirements:
   host:
+    - python
     - pip
-    - python >=3.6.*
+    - wheel
+    - setuptools
   run:
-    - pdfminer.six ==20221105
+    - python
+    - pdfminer.six ==20231228
     - pillow >=9.1
-    - python >=3.6.*
-    - wand >=0.6.10
+    - pypdfium2 >=4.18.0
+
+{% set ignore_tests = "" %}
+# Test runs forever
+{% set ignore_tests = " --ignore=tests/test_issues.py" %}
+
+{% set deselect_tests = "" %}
+# The test pdf file missed in the tests/pdf folder
+{% set deselect_tests = " --deselect=tests/test_display.py::Test::test_curves" %}
 
 test:
+  source_files:
+    - tests
   imports:
     - pdfplumber
   commands:
-    - pip check
+    # pip check cannot correctly determine the pdfminer-six library version: 
+    # Error: pdfplumber 0.11.4 has requirement pdfminer.six==20231228, but you have pdfminer-six 0.0.1.
+    # Package plan:
+    # pdfminer.six:       20231228-py39hca03da5_0         sfe1ed40
+    #- pip check
     - pdfplumber --help
+    - pytest -vvv {{ ignore_tests }} {{ deselect_tests }} tests
   requires:
     - pip
+    - pytest
+    - pandas ==2.2.2
+    # "Cannot find Ghostscript, which is required for repairs.\n"
+    # FAILED tests/test_repair.py::Test::test_from_issue_932
+    - ghostscript
 
 about:
   home: https://github.com/jsvine/pdfplumber
   summary: Plumb a PDF for detailed information about each char, rectangle, and line.
   license: MIT
   license_file: LICENSE.txt
+  license_family: MIT
+  description: Plumb a PDF for detailed information about each text character, rectangle, and line. Plus - Table extraction and visual debugging.
+  dev_url: https://github.com/jsvine/pdfplumber
+  doc_url: https://github.com/jsvine/pdfplumber/blob/stable/README.md
 
 extra:
   recipe-maintainers:

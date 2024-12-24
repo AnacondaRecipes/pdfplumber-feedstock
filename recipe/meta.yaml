@@ -18,6 +18,8 @@ build:
   # Skip version lower then python 3.9, because pdfminer.six is avaliable only from python version 3.9
   # Skip version higher then python 3.11, because pypdfium2 is avaliable only from python version 3.9 to 3.11
   skip: True  # [py<39 or py>311]
+  # Not found requested pypdfium2 >=4.18.0 on s390x
+  skip: True  # [s390x]
 
 requirements:
   host:
@@ -38,6 +40,12 @@ requirements:
 {% set deselect_tests = "" %}
 # The test pdf file missed in the tests/pdf folder
 {% set deselect_tests = " --deselect=tests/test_display.py::Test::test_curves" %}
+# PermissionError: [Errno 13] Permission denied: 'C:\\cygwin64\\tmp\\tmpv8cbmnp8
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_exclude" %} # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_include" %} # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %} # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %} # [win]
 
 test:
   source_files:

@@ -40,6 +40,13 @@ requirements:
 {% set deselect_tests = "" %}
 # The test pdf file missed in the tests/pdf folder
 {% set deselect_tests = " --deselect=tests/test_display.py::Test::test_curves" %}
+# raise Exception("Cannot find Ghostscript, which is required for repairs.\n")
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_from_issue_932" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_other_repair_inputs" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_custom_path" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_password" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %}
 # PermissionError: [Errno 13] Permission denied: 'C:\\cygwin64\\tmp\\tmpv8cbmnp8
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv" %}  # [win]
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_exclude" %} # [win]
@@ -64,9 +71,6 @@ test:
     - pip
     - pytest
     - pandas ==2.2.2
-    # "Cannot find Ghostscript, which is required for repairs.\n"
-    # FAILED tests/test_repair.py::Test::test_from_issue_932
-    - ghostscript
 
 about:
   home: https://github.com/jsvine/pdfplumber

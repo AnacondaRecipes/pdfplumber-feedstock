@@ -60,11 +60,7 @@ test:
   imports:
     - pdfplumber
   commands:
-    # pip check cannot correctly determine the pdfminer-six library version: 
-    # Error: pdfplumber 0.11.4 has requirement pdfminer.six==20231228, but you have pdfminer-six 0.0.1.
-    # Package plan:
-    # pdfminer.six:       20231228-py39hca03da5_0         sfe1ed40
-    #- pip check
+    - pip check
     - pdfplumber --help
     - pytest -vvv {{ ignore_tests }} {{ deselect_tests }} tests
   requires:
@@ -85,5 +81,3 @@ about:
 extra:
   recipe-maintainers:
     - melonhead901
-  skip-lints:
-      - missing_pip_check

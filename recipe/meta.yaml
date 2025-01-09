@@ -16,8 +16,7 @@ build:
     - pdfplumber = pdfplumber.cli:main
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   # Skip version lower then python 3.9, because pdfminer.six is avaliable only from python version 3.9
-  # Skip version higher then python 3.11, because pypdfium2 is avaliable only from python version 3.9 to 3.11
-  skip: True  # [py<39 or py>311]
+  skip: True  # [py<39]
   # Not found requested pypdfium2 >=4.18.0 on s390x
   skip: True  # [s390x]
 

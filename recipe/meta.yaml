@@ -23,11 +23,11 @@ requirements:
     - setuptools
     - python
   run:
-    - pdfminer.six ==20231228
+    - pdfminer.six
     - pypdfium2
-    - pillow >=9.1
+    - pillow
     - python
-    - wand >=0.6.10
+    - wand 
 
 test:
   imports:

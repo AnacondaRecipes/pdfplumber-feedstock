@@ -78,5 +78,10 @@ about:
   doc_url: https://github.com/jsvine/pdfplumber/blob/stable/README.md
 
 extra:
+  anaconda-services:
+    ref: https://anaconda.zendesk.com/agent/tickets/78379
+    reason: Client Request
+  recipe-maintainers:
+    - ianaobi
   recipe-maintainers:
     - melonhead901

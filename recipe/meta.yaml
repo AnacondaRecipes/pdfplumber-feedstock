@@ -1,5 +1,5 @@
 {% set name = "pdfplumber" %}
-{% set version = "0.11.4" %}
+{% set version = "0.11.9" %}
 
 
 package:
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/jsvine/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3a11a2fd7779a31cdabc46fba70014ddbddda1af89899b762a498aeda159a60f
+  sha256: 4cf4e1d7c709e17e713f24265366b678f9c99a853f2862edddc39de917d51cc2
 
 build:
   number: 0
@@ -28,7 +28,7 @@ requirements:
     - setuptools
   run:
     - python
-    - pdfminer.six ==20231228
+    - pdfminer.six ==20251230
     - pillow >=9.1
     - pypdfium2 >=4.18.0
 

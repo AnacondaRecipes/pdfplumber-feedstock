@@ -28,7 +28,7 @@ requirements:
     - setuptools
   run:
     - python
-    - pdfminer.six ==20251230
+    - pdfminer.six >=20251230
     - pillow >=9.1
     - pypdfium2 >=4.18.0
 

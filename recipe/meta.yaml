@@ -1,5 +1,5 @@
 {% set name = "pdfplumber" %}
-{% set version = "0.11.4" %}
+{% set version = "0.11.10" %}
 
 
 package:
@@ -8,17 +8,16 @@ package:
 
 source:
   url: https://github.com/jsvine/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3a11a2fd7779a31cdabc46fba70014ddbddda1af89899b762a498aeda159a60f
+  sha256: a325965432370c7d9943ab3f4553b60c4c7c31e7fd087b6ecf9801d7e21a174c
 
 build:
   number: 0
   entry_points:
     - pdfplumber = pdfplumber.cli:main
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # Skip version lower then python 3.9, because pdfminer.six is avaliable only from python version 3.9
-  skip: True  # [py<39]
-  # Not found requested pypdfium2 >=4.18.0 on s390x
-  skip: True  # [s390x]
+  # pdfminer.six is available only from python 3.9; pypdfium2 has no s390x/win-64
+  # build on pkgs/main (win needs the sourcebuild-toolchained backend, deferred).
+  skip: True  # [py<39 or s390x or win]
 
 requirements:
   host:
@@ -28,34 +27,28 @@ requirements:
     - setuptools
   run:
     - python
-    - pdfminer.six ==20231228
-    - pillow >=9.1
-    - pypdfium2 >=4.18.0
+    - pdfminer.six ==20260107
+    - pillow >=12.2.0
+    - pypdfium2 >=5.9.0
 
 {% set ignore_tests = "" %}
 # Test runs forever
 {% set ignore_tests = " --ignore=tests/test_issues.py" %}
 
 {% set deselect_tests = "" %}
-# The test pdf file missed in the tests/pdf folder
-{% set deselect_tests = " --deselect=tests/test_display.py::Test::test_curves" %}
-# raise Exception("Cannot find Ghostscript, which is required for repairs.\n")
+# ghostscript is not on pkgs/main, so the repair tests that shell out to it can't run
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_from_issue_932" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_other_repair_inputs" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_custom_path" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_password" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %}
-# PermissionError: [Errno 13] Permission denied: 'C:\\cygwin64\\tmp\\tmpv8cbmnp8
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_exclude" %} # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_include" %} # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %} # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %} # [win]
 
 test:
   source_files:
     - tests
+    # test_display.py::test_curves loads a PDF from examples/pdfs/
+    - examples
   imports:
     - pdfplumber
   commands:

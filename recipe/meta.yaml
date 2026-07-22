@@ -36,9 +36,7 @@ requirements:
 {% set ignore_tests = " --ignore=tests/test_issues.py" %}
 
 {% set deselect_tests = "" %}
-# The test pdf file missed in the tests/pdf folder
-{% set deselect_tests = " --deselect=tests/test_display.py::Test::test_curves" %}
-# raise Exception("Cannot find Ghostscript, which is required for repairs.\n")
+# ghostscript is not on pkgs/main, so the repair tests that shell out to it can't run
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_from_issue_932" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_other_repair_inputs" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_custom_path" %}
@@ -49,6 +47,8 @@ requirements:
 test:
   source_files:
     - tests
+    # test_display.py::test_curves loads a PDF from examples/pdfs/
+    - examples
   imports:
     - pdfplumber
   commands:

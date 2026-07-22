@@ -1,5 +1,5 @@
 {% set name = "pdfplumber" %}
-{% set version = "0.11.9" %}
+{% set version = "0.11.10" %}
 
 
 package:
@@ -8,17 +8,16 @@ package:
 
 source:
   url: https://github.com/jsvine/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 4cf4e1d7c709e17e713f24265366b678f9c99a853f2862edddc39de917d51cc2
+  sha256: a325965432370c7d9943ab3f4553b60c4c7c31e7fd087b6ecf9801d7e21a174c
 
 build:
   number: 0
   entry_points:
     - pdfplumber = pdfplumber.cli:main
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # Skip version lower then python 3.9, because pdfminer.six is avaliable only from python version 3.9
-  skip: True  # [py<39]
-  # Not found requested pypdfium2 >=4.18.0 on s390x
-  skip: True  # [s390x]
+  # pdfminer.six is available only from python 3.9; pypdfium2 has no s390x/win-64
+  # build on pkgs/main (win needs the sourcebuild-toolchained backend, deferred).
+  skip: True  # [py<39 or s390x or win]
 
 requirements:
   host:
@@ -28,9 +27,9 @@ requirements:
     - setuptools
   run:
     - python
-    - pdfminer.six >=20251230
-    - pillow >=9.1
-    - pypdfium2 >=4.18.0
+    - pdfminer.six ==20260107
+    - pillow >=12.2.0
+    - pypdfium2 >=5.9.0
 
 {% set ignore_tests = "" %}
 # Test runs forever
@@ -46,12 +45,6 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_password" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %}
-# PermissionError: [Errno 13] Permission denied: 'C:\\cygwin64\\tmp\\tmpv8cbmnp8
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_exclude" %} # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_include" %} # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %} # [win]
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %} # [win]
 
 test:
   source_files:

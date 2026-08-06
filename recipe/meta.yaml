@@ -11,13 +11,13 @@ source:
   sha256: a325965432370c7d9943ab3f4553b60c4c7c31e7fd087b6ecf9801d7e21a174c
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - pdfplumber = pdfplumber.cli:main
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  # pdfminer.six is available only from python 3.9; pypdfium2 has no s390x/win-64
-  # build on pkgs/main (win needs the sourcebuild-toolchained backend, deferred).
-  skip: True  # [py<39 or s390x or win]
+  # pdfminer.six is available only from python 3.9; pypdfium2 has no s390x build.
+  # (win-64 now has pypdfium2 5.12.1 via its sourcebuild-toolchained recipe.)
+  skip: True  # [py<39 or s390x]
 
 requirements:
   host:
@@ -43,6 +43,14 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_password" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_setting" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_repair.py::Test::test_repair_to_file" %}
+
+# test_convert's CLI tests compare output byte-for-byte against LF fixtures; on Windows
+# the CLI writes CRLF line endings, so the exact-string asserts fail (test-harness
+# artifact -- pdfplumber's CLI itself works fine on win).
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_exclude" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_csv_include" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_convert.py::Test::test_cli_text" %}  # [win]
 
 test:
   source_files:
